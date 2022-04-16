@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const session = require("express-session");
 
 const app = express();
 const PORT = process.env.PORT ?? 2000
@@ -22,6 +23,29 @@ app.use("/doctor", doctorController)
 app.use("/clinic", clinicController)
 app.use("/appt", apptController)
 app.use("/users", userController);
+
+app.set("trust proxy", 1); // add this line
+app.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false,
+// add the cookie stuff below
+    cookie: {
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+    },
+  })
+);
+
+app.use(
+  cors({
+    credentials: true,
+// change your origin to match your own
+    origin: ["http://localhost:2000", "https://project-3-clinic-appt-frontend.vercel.app/"],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  })
+);
 
 
 
