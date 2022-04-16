@@ -20,6 +20,7 @@
   "homepage": "https://github.com/delanyeong/Project-3-clinic-appt-backend#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "connect-mongodb-session": "^3.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
