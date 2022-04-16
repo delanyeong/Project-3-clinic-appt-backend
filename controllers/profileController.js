@@ -3,7 +3,19 @@ const express = require('express');
 // const { append } = require('express/lib/response');
 const router = express.Router();
 
-const User = require('../models/userSchema');
+const Profile = require('../models/profileSchema');
+const context = {
+  ...context, // original context
+  currentUser: req.session.currentUser
+}
+
+const isAuthenticated = (req, res, next) => {
+  if (req.session.currentUser) {
+    return next();
+  } else {
+    res.redirect("/sessions/new");
+  }
+};
 
 
 
@@ -27,10 +39,10 @@ const User = require('../models/userSchema');
 
 
 // *Index Route
-router.get('/', (req, res) => {
-  User.find()
-    .then(users => {
-      res.json(users)
+router.get('/', isAuthenticated, (req, res) => {
+  Profile.find()
+    .then(profiles => {
+      res.json(profiles)
     })
     .catch(err => {
       res.status(400).json(err)
@@ -41,8 +53,8 @@ router.get('/', (req, res) => {
 router.post("/", async (req, res) => {
     console.log("body", req.body)
     try {
-      const createdUsers = await User.create(req.body);
-      res.status(200).json(createdUsers);
+      const createdProfiles = await Profile.create(req.body);
+      res.status(200).json(createdProfiles);
     } catch (error) {
       res.status(400).json({ error: error.message });
     };
@@ -50,8 +62,8 @@ router.post("/", async (req, res) => {
 
 //*Put route
 router.put("/:id", async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, req.body);
-  res.json({ message: "User Updated" });
+  await Profile.findByIdAndUpdate(req.params.id, req.body);
+  res.json({ message: "Profile Updated" });
 });
   
 

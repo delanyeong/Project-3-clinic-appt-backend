@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userSchema = mongoose.Schema(
+const profileSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -14,6 +14,10 @@ const userSchema = mongoose.Schema(
       type: String,
       // required: true,
     },
+    // date: {
+    //   type: Date,
+    //   default: Date.now
+    // },
     dob: {
       type: String,
     },
@@ -29,4 +33,4 @@ const userSchema = mongoose.Schema(
     // },
   }
 );
-module.exports = mongoose.model("Users", userSchema);
+module.exports = mongoose.model("Profiles", profileSchema);
