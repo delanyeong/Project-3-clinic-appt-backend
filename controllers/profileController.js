@@ -4,18 +4,6 @@ const express = require('express');
 const router = express.Router();
 
 const Profile = require('../models/profileSchema');
-const context = {
-  ...context, // original context
-  currentUser: req.session.currentUser
-}
-
-const isAuthenticated = (req, res, next) => {
-  if (req.session.currentUser) {
-    return next();
-  } else {
-    res.redirect("/sessions/new");
-  }
-};
 
 
 
@@ -39,7 +27,7 @@ const isAuthenticated = (req, res, next) => {
 
 
 // *Index Route
-router.get('/', isAuthenticated, (req, res) => {
+router.get('/', (req, res) => {
   Profile.find()
     .then(profiles => {
       res.json(profiles)

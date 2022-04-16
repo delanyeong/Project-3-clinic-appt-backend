@@ -2,7 +2,6 @@ require('dotenv').config()
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const session = require("express-session");
 
 const app = express();
 const PORT = process.env.PORT ?? 2000
@@ -13,7 +12,6 @@ const doctorController = require("./controllers/doctorController")
 const clinicController = require("./controllers/clinicController")
 const apptController = require("./controllers/apptController")
 const userController = require("./controllers/users_controller.js");
-const sessionsController = require("./controllers/sessions_controller.js");
 
 //MIDDLEWARE
 app.use(cors());
@@ -24,14 +22,6 @@ app.use("/doctor", doctorController)
 app.use("/clinic", clinicController)
 app.use("/appt", apptController)
 app.use("/users", userController);
-app.use(
-  session({
-    secret: process.env.SECRET, //a random string do not copy this value or your stuff will get hacked
-    resave: false, // default more info: https://www.npmjs.com/package/express-session#resave
-    saveUninitialized: false, // default  more info: https://www.npmjs.com/package/express-session#resave
-  })
-);
-app.use("/sessions", sessionsController);
 
 
 
