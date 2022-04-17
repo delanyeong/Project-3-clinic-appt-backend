@@ -7,8 +7,8 @@ const session = require("express-session");
 const MongoDBSession = require('connect-mongodb-session')(session)
 
 const app = express();
-const PORT = process.env.PORT ?? 3000
-const MONGODB_URI = process.env.MONGODB_URI
+const PORT = process.env.PORT ?? 3002
+const MONGODB_URI = process.env.MONGODB_URI ?? "mongodb://localhost:27017/sessions"
 
 const User = require("./models/User")
 
@@ -104,19 +104,19 @@ app.post("/login", async (req,res) => {
   const user = await User.findOne({email});
 
   if(!user) {
-    return res.redirect("/login");
+    return res.status(400).json({ errors: [{ msg: 'Invalid credentials' }] });
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    return res.redirect("/login");
+    return res.status(400).json({ errors: [{ msg: 'Invalid credentials' }] });
 
   }
 
   req.session.isAuth = true
 
-  res.redirect("/dashboard");
+  res.redirect("/");
 
 });
 
@@ -135,7 +135,7 @@ app.post("/register", async (req,res) => {
   let user = await User.findOne({email});
 
   if (user) {
-    return res.redirect ("/register");
+    return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
   }
 
   const hashedPsw = await bcrypt.hash(password, 12);
@@ -152,9 +152,9 @@ app.post("/register", async (req,res) => {
 
 });
 //Dashboard ==============================================================
-app.get("/dashboard", isAuth, (req,res) => {
+app.get("/", isAuth, (req,res) => {
   // res.render("dashboard");
-  res.send("You have been directed to dashboard");
+  res.send("You have been directed to homepage");
 });
 //Logout ==============================================================
 app.post("/logout", (req,res) =>{
