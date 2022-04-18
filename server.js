@@ -10,6 +10,8 @@ const app = express();
 const PORT = process.env.PORT ?? 3002
 const MONGODB_URI = process.env.MONGODB_URI ?? "mongodb://localhost:27017/sessions"
 
+const isAuth = require("./middleware/isAuth")
+
 const User = require("./models/User")
 
 const profileController = require("./controllers/profileController")
@@ -73,13 +75,13 @@ app.use(
   })
 );
 
-const isAuth = (req, res, next) => {
-  if (req.session.isAuth) {
-    next()
-  } else {
-    res.redirect("/login")
-  }
-}
+// const isAuth = (req, res, next) => {
+//   if (req.session.isAuth) {
+//     next()
+//   } else {
+//     res.redirect("/login")
+//   }
+// }
 
 
 
