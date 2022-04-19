@@ -42,7 +42,6 @@ app.use(express.urlencoded({extended: true}))
 
 // MIDDLEWARE - BASE ROUTES
 
-=======
 app.use("/profile", profileController)
 app.use("/doctor", doctorController)
 app.use("/clinic", clinicController)
