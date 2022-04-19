@@ -1,11 +1,41 @@
 const express = require('express');
-const { route } = require('express/lib/application');
-const { append } = require('express/lib/response');
 const router = express.Router();
 
 const Clinic = require('../models/clinicSchema');
 
-//MIDDLEWARE
+//SEED
+router.get("/seed", async (req, res) => {
+  try {
+      await Clinic.deleteMany({})
+      await Clinic.insertMany([
+        {
+          name: "O2 Medical Clinic",
+          address: "527D Pasir Ris Street 51, #01-05, Singapore 514527",
+          doctorname: "Dr Law Kung How",
+          education: "MBBS (Singapore)",
+          specialisation: "Dip Dermatology (Singapore)"
+        },
+        {
+          name: "Fire Medical Clinic",
+          address: "732 Tampines Street 71, #01-13, Singapore 520732",
+          doctorname: "Dr Sam Toh",
+          education: "MBBChBAO (Ireland)",
+          specialisation: "Dip Dermatology (Singapore)"
+        },
+        {
+          name: "Choong's Clinic",
+          address: "123 Simei Street 45, #01-67, Singapore 528902",
+          doctorname: "Dr Choong Chee",
+          education: "MBBS (Singapore)",
+          specialisation: "MMed FAm Med (Singapore)"
+        }
+      ]);
+      res.send("Seed")
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 
 // *Index Route
 router.get('/', (req, res) => {
@@ -17,5 +47,13 @@ router.get('/', (req, res) => {
         res.status(400).json(err)
       })
   })
+
+//* Show Route
+router.get("/:clinic_id", (req, res) => {
+  Clinic.findById(req.params.clinic_id, (err, clinic) => {
+    res.json(clinic);
+  });
+});
+
 
   module.exports = router;

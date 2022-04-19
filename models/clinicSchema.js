@@ -1,15 +1,26 @@
 const mongoose = require ('mongoose');
 
-const clinicSchema = new mongoose.Schema({
-    name: {
+const Schema = mongoose.Schema
+
+const clinicSchema = new Schema({
+  name: {
         type: String,
-        required: true
     },
     address: {
         type: String,
-        required: true,
     },
+    doctorname: {
+      type: String,
+    },
+    education: {
+      type: String,
+    },
+    specialisation: {
+      type: String,
+    }
     
 });
 
-module.exports = Clinic = mongoose.model('clinic', clinicSchema);
+const Clinic = mongoose.model('clinic', clinicSchema);
+
+module.exports = Clinic 

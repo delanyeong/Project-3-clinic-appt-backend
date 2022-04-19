@@ -2,7 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 
-const isAuth = require("../middleware/isAuth");
+
+const isAuth = require('../middleware/isAuth');
 
 const { check, validationResult } = require('express-validator');
 
@@ -15,12 +16,22 @@ const clinicSchema = require('../models/clinicSchema');
 //@access Private
 
 router.get("/appointments", isAuth, (req,res)=> {
-  User.appointment.find()
-  // .sort({ date:1 })
-  .then( appointments => res.json(appointments))
-  .catch(err =>
-    res.status(500).json({ msg: "Could not get the appointments. Please try again."})
-    );
+  async function listGames() {
+    const users = await User
+        .find()
+        .select('appointments');
+    res.json(users);
+}
+listGames();
+  
+  // console.log(req.body);
+  // console.log(User.findById())
+  // User.findById()
+  // // .sort({ date:1 })
+  // .then( users => res.json(users))
+  // .catch(err =>
+  //   res.status(500).json({ msg: "Could not get the appointments. Please try again."})
+  //   );
 });
 
 
@@ -28,7 +39,7 @@ router.get("/appointments", isAuth, (req,res)=> {
 //@desc Add new user appointment
 //@access Private
 
-router.post('/:clinic_id', [isAuth, 
+router.post('/:clinic_id', 
   [ 
     check('patientname', 'Patient name is required')
         .not().isEmpty(),
@@ -40,7 +51,6 @@ router.post('/:clinic_id', [isAuth,
         .not().isEmpty(),
     check('email', 'Email is required')
         .not().isEmpty(),
-]
 ], async (req,res)=> {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
