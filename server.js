@@ -41,6 +41,10 @@ app.use(express.json()); //must be above the routes
 app.use(express.urlencoded({extended: true}))
 
 // MIDDLEWARE - BASE ROUTES
+
+=======
+app.use("/profile", profileController)
+app.use("/doctor", doctorController)
 app.use("/clinic", clinicController)
 app.use("/appt", apptController)
 

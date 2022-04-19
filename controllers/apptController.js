@@ -39,6 +39,7 @@ listGames();
 //@desc Add new user appointment
 //@access Private
 
+
 router.post('/:clinic_id', 
   [ 
     check('patientname', 'Patient name is required')
@@ -51,7 +52,11 @@ router.post('/:clinic_id',
         .not().isEmpty(),
     check('email', 'Email is required')
         .not().isEmpty(),
+
 ], async (req,res)=> {
+=======
+
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({errors: errors.array() });
