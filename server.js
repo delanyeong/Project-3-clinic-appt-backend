@@ -14,11 +14,8 @@ const isAuth = require("./middleware/isAuth")
 
 const User = require("./models/User")
 
-const profileController = require("./controllers/profileController")
-const doctorController = require("./controllers/doctorController")
 const clinicController = require("./controllers/clinicController")
 const apptController = require("./controllers/apptController")
-// const userController = require("./controllers/users_controller.js");
 
 // MONGOOSE CONNECTION/ERROR/DISCONNECTION
 mongoose.connection.on("error", (err) =>
@@ -44,11 +41,12 @@ app.use(express.json()); //must be above the routes
 app.use(express.urlencoded({extended: true}))
 
 // MIDDLEWARE - BASE ROUTES
-// app.use("/profile", profileController)
-// app.use("/doctor", doctorController)
+
+=======
+app.use("/profile", profileController)
+app.use("/doctor", doctorController)
 app.use("/clinic", clinicController)
 app.use("/appt", apptController)
-// app.use("/users", userController);
 
 //MIDDLEWARE - LOGIN AND AUTHENTICATION 
 app.set("trust proxy", 1); // add this line
@@ -74,15 +72,6 @@ app.use(
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   })
 );
-
-// const isAuth = (req, res, next) => {
-//   if (req.session.isAuth) {
-//     next()
-//   } else {
-//     res.redirect("/login")
-//   }
-// }
-
 
 
 //ROUTES
@@ -165,12 +154,6 @@ app.post("/logout", (req,res) =>{
     res.redirect("/");
   })
 })
-
-
-//ROUTES - ORIGINAL
-// app.get("/", (req, res) => {
-//     res.send('Hi 2');
-// })
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
