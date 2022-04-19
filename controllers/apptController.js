@@ -28,7 +28,7 @@ router.get("/appointments", isAuth, (req,res)=> {
 //@desc Add new user appointment
 //@access Private
 
-router.post('/:clinic_id', [isAuth, 
+router.post('/',  
   [ 
     check('patientname', 'Patient name is required')
         .not().isEmpty(),
@@ -40,8 +40,8 @@ router.post('/:clinic_id', [isAuth,
         .not().isEmpty(),
     check('email', 'Email is required')
         .not().isEmpty(),
-]
-], async (req,res)=> {
+],
+ async (req,res)=> {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({errors: errors.array() });
