@@ -90,7 +90,7 @@ app.use(
 //REGISTER ROUTES
 // Landing Page ==============================================================
 app.get("/", (req,res) => {
-  req.session.isAuth = true;
+  // req.session.isAuth = true; //I THINK THIS COULD BE THE REASON WHY DASHBOARD IS NOT WORKING
   res.send("Hi 2");
 });
 
