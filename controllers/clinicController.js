@@ -40,8 +40,8 @@ router.get("/seed", async (req, res) => {
 // *Index Route
 router.get('/', (req, res) => {
     Clinic.find()
-      .then(clinics => {
-        res.json(clinics)
+      .then(clinic => {
+        res.json(clinic)
       })
       .catch(err => {
         res.status(400).json(err)
