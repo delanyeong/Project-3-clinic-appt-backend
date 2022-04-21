@@ -6,7 +6,7 @@ const userSchema = new Schema({
   username: {
     type: String,
     required: true,
-    // unique: true,
+    unique: true,
   },
   email: { 
     type: String,
@@ -22,6 +22,9 @@ const userSchema = new Schema({
         clinic: {
             type: Schema.Types.ObjectId,
             ref: 'clinic'
+        },
+        clinicname: {
+          type: String
         },
         bookingId: {
             type: Number
@@ -51,13 +54,10 @@ const userSchema = new Schema({
             type: String,
             required: true
         },
-        name: {
-            type: String
-        },
     }
 ]
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('user', userSchema);
 
 module.exports = User;

@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const morgan = require("morgan");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const MongoDBSession = require('connect-mongodb-session')(session)
@@ -30,64 +31,58 @@ mongoose.connection.once("open", () => {
   console.log("connected to mongoose...");
 });
 
+//MIDDLEWARE - PARSING
+app.use(cors());
+app.use(express.json()); //must be above the routes
+app.use(express.urlencoded({extended: false}))
+app.use(morgan("tiny"));
+
+
+//MIDDLEWARE - COOKIE-SESSION FOR LOGIN-AUTH 
+app.set("trust proxy", 1); // add this line
 const store = new MongoDBSession({
   uri: MONGODB_URI,
   collection: 'mySessions'
 })
-
-//MIDDLEWARE
-app.use(cors());
-app.use(express.json()); //must be above the routes
-app.use(express.urlencoded({extended: true}))
-
-// MIDDLEWARE - BASE ROUTES
-
-// app.use("/profile", profileController)
-//app.use("/doctor", doctorController)
-app.use("/clinic", clinicController)
-app.use("/appt", apptController)
-
-//MIDDLEWARE - LOGIN AND AUTHENTICATION 
-app.set("trust proxy", 1); // add this line
-
 app.use(
   session({
     secret: "secret",
     resave: false,
     saveUninitialized: false,
     store: store,
-// add the cookie stuff below
+    // add the cookie stuff below
     cookie: {
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
     },
   })
-);
-app.use(
-  cors({
-    credentials: true,
-// change your origin to match your own
-    origin: ["http://localhost:2000", "https://project-3-clinic-appt-frontend.vercel.app/"],
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  })
-);
-
-
+  );
+  app.use(
+    cors({
+      credentials: true,
+      // change your origin to match your own
+      origin: ["http://localhost:2000", "https://project-3-clinic-appt-frontend.vercel.app/"],
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    })
+    );
+    
+// MIDDLEWARE - BASE ROUTES
+  app.use("/clinic", isAuth, clinicController)
+  app.use("/appt", isAuth, apptController)
+    
 //ROUTES
-
-//REGISTER ROUTES
-// Landing Page ==============================================================
+//LOGIN-AUTH-REGISTER ROUTES
+// Server Landing Page ==============================================================
 app.get("/", (req,res) => {
-  // req.session.isAuth = true; //I THINK THIS COULD BE THE REASON WHY DASHBOARD IS NOT WORKING
   res.send("Hi 2");
 });
 
-//Login Page ==============================================================
+//LogIN Landing Page ==============================================================
 app.get("/login", (req,res) =>{
-  // res.render("login");
   res.send("You have been directed to login");
 });
-//Login Page 2 ==============================================================
+
+//LogIN POST ==============================================================
 app.post("/login", async (req,res) => {
   const { email, password } = req.body
 
@@ -110,14 +105,13 @@ app.post("/login", async (req,res) => {
 
 });
 
-//Register Page ==============================================================
+//Register Landing Page ==============================================================
 app.get("/register", (req,res) => {
-  // res.render("register");
   res.send("You have been directed to register");
 
 });
 
-//Register Page 2 ==============================================================
+//Register POST ==============================================================
 app.post("/register", async (req,res) => {
   console.log("req.body", req.body)
   const { username, email, password } = req.body;
@@ -141,12 +135,14 @@ app.post("/register", async (req,res) => {
   res.redirect("/login");
 
 });
-//Dashboard ==============================================================
+
+//Dashboard Landing Page ==============================================================
 app.get("/", isAuth, (req,res) => {
   // res.render("dashboard");
   res.send("You have been directed to homepage");
 });
-//Logout ==============================================================
+
+//LogOUT POST ==============================================================
 app.post("/logout", (req,res) =>{
   req.session.destroy((err)=> {
     if (err) throw err;

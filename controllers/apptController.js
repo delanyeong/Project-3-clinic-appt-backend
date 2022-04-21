@@ -1,111 +1,100 @@
 require('dotenv').config();
 const express = require('express');
 const router = express.Router();
-
+const { check, validationResult } = require('express-validator');
 
 const isAuth = require('../middleware/isAuth');
 
-const { check, validationResult } = require('express-validator');
-
-const User = require('../models/User');
+const userSchema = require('../models/User');
 const clinicSchema = require('../models/clinicSchema');
 
-
-//@route GET /appointments ===================================================================
+//@route GET appt/ ===================================================================
 //@desc Get all appointments
 //@access Private
-
-router.get("/appointments", isAuth, (req,res)=> {
-  async function listGames() {
-    const users = await User
-        .find()
-        .select('appointments');
-    res.json(users);
-}
-listGames();
-  
-  // console.log(req.body);
-  // console.log(User.findById())
-  // User.findById()
-  // // .sort({ date:1 })
-  // .then( users => res.json(users))
-  // .catch(err =>
-  //   res.status(500).json({ msg: "Could not get the appointments. Please try again."})
-  //   );
+router.get("/", (req, res) => {
+  userSchema.find()
+    .select('appointments')
+    .then(users => res.json(users))
+    .catch(err =>
+      res.status(500).json({ msg: "Could not get the appointments. Please try again." })
+    );
 });
 
-
-//@route POST /appointment/:clinic_id ===================================================================
+//@route POST appt/:clinic_id/:user_id ===================================================================
 //@desc Add new user appointment
 //@access Private
-
-
-router.post('/:clinic_id', 
-  [ 
+router.post('/:clinic_id/:user_id', [isAuth,
+  [
     check('patientname', 'Patient name is required')
-        .not().isEmpty(),
+      .not().isEmpty(),
     check('dateofbirth', 'Date of birth is required')
-        .not().isEmpty(),
+      .not().isEmpty(),
     check('gender', 'Gender is required')
-        .not().isEmpty(),
+      .not().isEmpty(),
     check('contact', 'Contact is required')
-        .not().isEmpty(),
+      .not().isEmpty(),
     check('email', 'Email is required')
-        .not().isEmpty(),
+      .not().isEmpty(),
 
-], async (req,res)=> {
+  ]
+], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({errors: errors.array() });
+    return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const user = await User.findById(req.user.id).select('-password');
-    const clinic = await clinicSchema.findById(req.params.clinic_id).select('-password');
+    const user = await userSchema.findById(req.params.user_id).select('-password');
+    const clinic = await clinicSchema.findById(req.params.clinic_id)
+    // .select('-password');
+    // console.log(req.body)
+    // console.log(req.params)
+    // console.log(req.params.clinic_id)
+    // console.log(req.params.user_id)
 
     // Create booking id
     function appointmentGenerator() {
-	 
+
       this.length = 8;
       this.timestamp = +new Date;
-      
-      var _getRandomInt = function( min, max ) {
-         return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
+
+      var _getRandomInt = function (min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
       }
-      
-      this.generate = function() {
-          var ts = this.timestamp.toString();
-          var parts = ts.split( "" ).reverse();
-          var id = "";
-          
-          for( var i = 0; i < this.length; ++i ) {
-             var index = _getRandomInt( 0, parts.length - 1 );
-             id += parts[index];	 
-          }
-          
-          return id;
+
+      this.generate = function () {
+        var ts = this.timestamp.toString();
+        var parts = ts.split("").reverse();
+        var id = "";
+
+        for (var i = 0; i < this.length; ++i) {
+          var index = _getRandomInt(0, parts.length - 1);
+          id += parts[index];
+        }
+
+        return id;
       }
-  }
+    }
 
-  const create_id = new appointmentGenerator();
-  const appointmentId = create_id.generate();
+    const create_id = new appointmentGenerator();
+    const appointmentId = create_id.generate();
 
-  const newAppointment = {
-    bookingId: appointmentId,
-    patientname: req.body.patientname,
-    dateofbirth: req.body.dateofbirth,
-    gender: req.body.gender,
-    contact: req.body.contact,
-    email: req.body.email,
-    date: req.body.date,
-    description: req.body.description,
-    name: clinic.name,
-    clinic: clinic.id
-  }
+    const newAppointment = {
+      bookingId: appointmentId,
+      patientname: req.body.patientname,
+      dateofbirth: req.body.dateofbirth,
+      gender: req.body.gender,
+      contact: req.body.contact,
+      email: req.body.email,
+      date: req.body.date,
+      description: req.body.description,
+      clinicname: clinic.name,
+      clinic: clinic.id
+    }
 
-  user.appointments.unshift(newAppointment);
-  await user.save()
+    user.appointments.unshift(newAppointment);
+    await user.save()
 
-  res.json(user);
+    res.json(user);
 
   } catch (err) {
     console.error(err.message);
@@ -113,57 +102,38 @@ router.post('/:clinic_id',
   }
 });
 
-
-//@route PUT /appointment/:id ===================================================================
+//@route PUT appt/:user_id/:appointment_id ===================================================================
 //@desc Edit an appointment
 //@access Private
-
-router.put("/appointment/:id", isAuth, (req,res) => {
-  Appointment.findById(req.params.id)
-  .then(appointment => {
-    //New values
-    const { date, time } = req.body;
-    (appointment.date = date),
-    (appointment.time = time),
-    appointment
-    .save()
-    .then(appointment => 
-      res.json({ msg: "Appointment edited successfully!"})
-      )
-      .catch(err =>
-      res.status(500).json({msg : "Something went wrong. Please try again."})
-    );
-  })
-  .catch(err =>
-    res.status(404).json({ msg: "Appointment not found."}));
+router.put("/:user_id/:appointment_id", isAuth, async (req, res) => {
+  // UPDATE METHOD STILL IN PROGRESS
 });
 
-
-// @route   Delete api/appointment/:appointment_id ===================================================================
+// @route   Delete appt/:user_id/:appointment_id ===================================================================
 // @desc    Delete a appointment
 // @access  Private
 
-router.delete('/:appointment_id', isAuth, async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id).select('-password');
-        
-        // Get the remove index for user
-        const removeIndexUser = user.appointments
-            .map(item => item.id)
-            .indexOf(req.params.appointment_id);
-          
-        user.appointments.splice(removeIndexUser, 1);
-        await user.save();
+router.delete('/:user_id/:appointment_id', isAuth, async (req, res) => {
+  try {
+    const user = await userSchema.findById(req.params.user_id).select('-password');
 
-        // Return user
-        res.json(user);
-    } catch (err) {
-        
-    }
+    // Get the remove index for user
+    const removeIndexUser = user.appointments
+      .map(item => item.id)
+      .indexOf(req.params.appointment_id);
+
+    user.appointments.splice(removeIndexUser, 1);
+    await user.save();
+
+    // Return user
+    res.json(user);
+  } catch (err) {
+
+  }
 });
 
 //EXPORT ===================================================================
-  module.exports = router;
+module.exports = router;
 
 //=================================================================== END ===================================================================
 
