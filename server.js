@@ -99,9 +99,14 @@ app.post("/login", async (req,res) => {
 
   }
 
-  req.session.isAuth = true
+  // req.session.isAuth = true
 
-  res.redirect("/");
+  // res.redirect("/");
+
+  const sessUser = { id: user.id, name: user.name, email: user.email }
+  req.session.user = sessUser
+
+  res.json({msg: "Logged in Successfully", sessUser})
 
 });
 
