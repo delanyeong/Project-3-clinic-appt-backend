@@ -7,6 +7,7 @@ const isAuth = require('../middleware/isAuth');
 
 const userSchema = require('../models/User');
 const clinicSchema = require('../models/clinicSchema');
+const apptSchema = require('../models/apptSchema')
 
 //@route GET appt/ ===================================================================
 //@desc Get all appointments
@@ -14,7 +15,8 @@ const clinicSchema = require('../models/clinicSchema');
 router.get("/", (req, res) => {
   userSchema.find()
     .select('appointments')
-    .then(users => res.json(users))
+    .populate('appointments')
+    .then(appointments => res.json(appointments))
     .catch(err =>
       res.status(500).json({ msg: "Could not get the appointments. Please try again." })
     );
@@ -78,7 +80,7 @@ router.post('/:clinic_id/:user_id', [isAuth,
     const create_id = new appointmentGenerator();
     const appointmentId = create_id.generate();
 
-    const newAppointment = {
+    const newAppointment = new apptSchema({
       bookingId: appointmentId,
       patientname: req.body.patientname,
       dateofbirth: req.body.dateofbirth,
@@ -87,11 +89,12 @@ router.post('/:clinic_id/:user_id', [isAuth,
       email: req.body.email,
       date: req.body.date,
       description: req.body.description,
-      clinicname: clinic.name,
       clinic: clinic.id
-    }
+    })
 
-    user.appointments.unshift(newAppointment);
+    newAppointment.save()
+    
+    user.appointments.push(newAppointment);
     await user.save()
 
     res.json(user);
