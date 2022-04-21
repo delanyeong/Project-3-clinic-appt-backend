@@ -67,8 +67,8 @@ app.use(
     );
     
 // MIDDLEWARE - BASE ROUTES
-  app.use("/clinic", isAuth, clinicController)
-  app.use("/appt", isAuth, apptController)
+  app.use("/clinic", clinicController)
+  app.use("/appt", apptController)
     
 //ROUTES
 //LOGIN-AUTH-REGISTER ROUTES
