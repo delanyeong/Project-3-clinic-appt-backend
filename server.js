@@ -68,7 +68,7 @@ app.use(
     
 // MIDDLEWARE - BASE ROUTES
   app.use("/clinic", clinicController)
-  app.use("/appt", apptController)
+  app.use("/appt", isAuth, apptController)
     
 //ROUTES
 //LOGIN-AUTH-REGISTER ROUTES
@@ -103,8 +103,9 @@ app.post("/login", async (req,res) => {
 
   // res.redirect("/");
 
-  const sessUser = { id: user.id, name: user.name, email: user.email }
+  const sessUser = { id: user.id, name: user.username, email: user.email }
   req.session.user = sessUser
+  console.log(session.user)
 
   res.json({msg: "Logged in Successfully", sessUser})
 
