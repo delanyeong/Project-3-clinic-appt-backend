@@ -19,43 +19,10 @@ const userSchema = new Schema({
   },
   appointments: [
     {
-        clinic: {
-            type: Schema.Types.ObjectId,
-            ref: 'clinic'
-        },
-        clinicname: {
-          type: String
-        },
-        bookingId: {
-            type: Number
-        },
-        patientname: {
-            type: String,
-            required: true
-        },
-        dateofbirth: {
-            type: Number,
-            required: true
-        },
-        gender: {
-            type: String,
-            required: true
-        },
-        contact: {
-            type: Number,
-        },
-        email: {
-          type: String,
-      },
-        date: {
-            type: Date,
-        },
-        description: {
-            type: String,
-            required: true
-        },
-    }
-]
+      type: Schema.Types.ObjectId,
+      ref: 'appt'
+    },
+  ]
 });
 
 const User = mongoose.model('user', userSchema);
