@@ -31,12 +31,6 @@ mongoose.connection.once("open", () => {
   console.log("connected to mongoose...");
 });
 
-//MIDDLEWARE - PARSING
-app.use(cors());
-app.use(express.json()); //must be above the routes
-app.use(express.urlencoded({extended: false}))
-app.use(morgan("tiny"));
-
 
 //MIDDLEWARE - COOKIE-SESSION FOR LOGIN-AUTH 
 app.set("trust proxy", 1); // add this line
@@ -49,7 +43,6 @@ app.use(
     secret: "secret",
     resave: false,
     saveUninitialized: false,
-    store: store,
     // add the cookie stuff below
     cookie: {
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
@@ -61,14 +54,19 @@ app.use(
     cors({
       credentials: true,
       // change your origin to match your own
-      origin: ["http://localhost:2000", "https://project-3-clinic-appt-frontend.vercel.app/"],
+      origin: ["http://localhost:3000", "https://project-3-clinic-appt-frontend.vercel.app/"],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     })
     );
     
+//MIDDLEWARE - PARSING
+app.use(express.json()); //must be above the routes
+app.use(express.urlencoded({extended: false}))
+app.use(morgan("tiny"));
+
 // MIDDLEWARE - BASE ROUTES
   app.use("/clinic", clinicController)
-  app.use("/appt", isAuth, apptController)
+  app.use("/appt", apptController)
     
 //ROUTES
 //LOGIN-AUTH-REGISTER ROUTES
@@ -105,9 +103,9 @@ app.post("/login", async (req,res) => {
 
   const sessUser = { id: user.id, name: user.username, email: user.email }
   req.session.user = sessUser
-  console.log(session.user)
+  console.log(req.session.user)
 
-  res.json({msg: "Logged in Successfully", sessUser})
+  res.status(201).json({data: sessUser})
 
 });
 

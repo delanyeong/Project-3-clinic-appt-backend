@@ -15,7 +15,7 @@ const apptSchema = new Schema({
         required: true
     },
     dateofbirth: {
-        type: Number,
+        type: String,
         required: true
     },
     gender: {

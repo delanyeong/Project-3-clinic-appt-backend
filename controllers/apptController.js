@@ -13,37 +13,46 @@ const apptSchema = require('../models/apptSchema')
 //@desc Get all appointments
 //@access Private
 router.get("/", (req, res) => {
-  userSchema.find()
-    .select('appointments')
-    .populate('appointments')
-    .then(appointments => res.json(appointments))
-    .catch(err =>
-      res.status(500).json({ msg: "Could not get the appointments. Please try again." })
-    );
+  apptSchema.find()
+      .then(appt => {
+        res.json(appt)
+      })
+      .catch(err => {
+        res.status(400).json(err)
+      })
+  // userSchema.find()
+  //   .select('appointments')
+  //   .populate('appointments')
+  //   .then(appointments => res.json(appointments))
+  //   .catch(err =>
+  //     res.status(500).json({ msg: "Could not get the appointments. Please try again." })
+  //   );
 });
 
 //@route POST appt/:clinic_id/:user_id ===================================================================
 //@desc Add new user appointment
 //@access Private
 router.post('/:clinic_id/:user_id', [isAuth,
-  [
-    check('patientname', 'Patient name is required')
-      .not().isEmpty(),
-    check('dateofbirth', 'Date of birth is required')
-      .not().isEmpty(),
-    check('gender', 'Gender is required')
-      .not().isEmpty(),
-    check('contact', 'Contact is required')
-      .not().isEmpty(),
-    check('email', 'Email is required')
-      .not().isEmpty(),
+  // [
+  //   check('patientname', 'Patient name is required')
+  //     .not().isEmpty(),
+  //   check('dateofbirth', 'Date of birth is required')
+  //     .not().isEmpty(),
+  //   check('gender', 'Gender is required')
+  //     .not().isEmpty(),
+  //   check('contact', 'Contact is required')
+  //     .not().isEmpty(),
+  //   check('email', 'Email is required')
+  //     .not().isEmpty(),
 
-  ]
+  // ]
 ], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  // const errors = validationResult(req);
+  console.log('ashdasb')
+  console.log("body",req.body)
+  // if (!errors.isEmpty()) {
+  //   return res.status(400).json({ errors: errors.array() });
+  // }
   try {
     const user = await userSchema.findById(req.params.user_id).select('-password');
     const clinic = await clinicSchema.findById(req.params.clinic_id)
@@ -95,7 +104,7 @@ router.post('/:clinic_id/:user_id', [isAuth,
     newAppointment.save()
     
     user.appointments.push(newAppointment);
-    await user.save()
+    await clinic.save()
 
     res.json(user);
 
