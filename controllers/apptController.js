@@ -117,6 +117,20 @@ router.post('/:clinic_id/:user_id', [isAuth,
   }
 });
 
+//Show Route
+router.get("/edit/:appointment_id", isAuth, async (req, res) => {
+  try {
+    console.log('here')
+    console.log(req.params.appointment_id)
+    const appt = await apptSchema.findById(req.params.appointment_id)
+    res.status(200).json(appt)
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+  
+});
+
 //@route PUT appt/:user_id/:appointment_id ===================================================================
 //@desc Edit an appointment
 //@access Private
