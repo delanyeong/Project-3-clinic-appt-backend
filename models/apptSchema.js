@@ -3,6 +3,9 @@ const mongoose = require ('mongoose');
 const Schema = mongoose.Schema
 
 const apptSchema = new Schema({
+    userid: {
+        type:String
+    },
     clinic: {
         type: Schema.Types.ObjectId,
         ref: 'clinic'

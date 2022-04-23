@@ -7,13 +7,14 @@ const isAuth = require('../middleware/isAuth');
 
 const userSchema = require('../models/User');
 const clinicSchema = require('../models/clinicSchema');
-const apptSchema = require('../models/apptSchema')
+const apptSchema = require('../models/apptSchema');
+const Appt = require('../models/apptSchema');
 
 //@route GET appt/ ===================================================================
 //@desc Get all appointments
 //@access Private
-router.get("/", (req, res) => {
-  apptSchema.find()
+router.get("/:user_id", async (req, res) => {
+  await apptSchema.find({userid: req.params.user_id})
       .then(appt => {
         res.json(appt)
       })
@@ -98,7 +99,9 @@ router.post('/:clinic_id/:user_id', [isAuth,
       email: req.body.email,
       date: req.body.date,
       description: req.body.description,
-      clinic: clinic.id
+      clinic: clinic.id,
+      userid: user.id
+
     })
 
     newAppointment.save()
@@ -125,22 +128,15 @@ router.put("/:user_id/:appointment_id", isAuth, async (req, res) => {
 // @desc    Delete a appointment
 // @access  Private
 
-router.delete('/:user_id/:appointment_id', isAuth, async (req, res) => {
+router.delete('/:appointment_id', isAuth, async (req, res) => {
   try {
-    const user = await userSchema.findById(req.params.user_id).select('-password');
-
-    // Get the remove index for user
-    const removeIndexUser = user.appointments
-      .map(item => item.id)
-      .indexOf(req.params.appointment_id);
-
-    user.appointments.splice(removeIndexUser, 1);
-    await user.save();
-
-    // Return user
-    res.json(user);
-  } catch (err) {
-
+      //* Delete Route
+      console.log(req.params.appointment_id)
+    await Appt.findByIdAndRemove(req.params.appointment_id);
+    res.json({ message: "Appt Deleted" });
+  } catch (error) {
+    console.error(err.message);
+    res.status(500).send("Server error");
   }
 });
 
