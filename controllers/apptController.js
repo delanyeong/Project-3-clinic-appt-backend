@@ -133,7 +133,7 @@ router.delete('/:appointment_id', isAuth, async (req, res) => {
       //* Delete Route
       console.log(req.params.appointment_id)
     await Appt.findByIdAndRemove(req.params.appointment_id);
-    res.json({ message: "Appt Deleted" });
+    res.status(200).send('success')
   } catch (error) {
     console.error(err.message);
     res.status(500).send("Server error");
