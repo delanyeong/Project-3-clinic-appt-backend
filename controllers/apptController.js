@@ -120,8 +120,22 @@ router.post('/:clinic_id/:user_id', [isAuth,
 //@route PUT appt/:user_id/:appointment_id ===================================================================
 //@desc Edit an appointment
 //@access Private
-router.put("/:user_id/:appointment_id", isAuth, async (req, res) => {
-  // UPDATE METHOD STILL IN PROGRESS
+router.put("/:appointment_id", isAuth, async (req, res) => {
+  try{
+    const { appointment_id: apptID } = req.params
+    const updAppt = await Appt.findByIdAndUpdate(
+      { _id: apptID }, 
+      req.body,
+      {new:true,})
+
+      if (!updAppt) {
+        return res.status(400)
+      }
+      res.status(200)
+  } catch {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
 });
 
 // @route   Delete appt/:user_id/:appointment_id ===================================================================
