@@ -10,6 +10,9 @@ const apptSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'clinic'
     },
+    clinicname: {
+        type: String
+      },
     bookingId: {
         type: Number
     },
