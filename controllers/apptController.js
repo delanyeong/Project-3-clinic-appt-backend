@@ -100,6 +100,7 @@ router.post('/:clinic_id/:user_id', [isAuth,
       date: req.body.date,
       description: req.body.description,
       clinic: clinic.id,
+      clinicname: clinic.name,
       userid: user.id
 
     })
