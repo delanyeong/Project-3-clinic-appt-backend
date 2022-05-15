@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
-const MongoDBSession = require('connect-mongodb-session')(session)
 
 const app = express();
 const PORT = process.env.PORT ?? 3002
@@ -18,7 +17,7 @@ const User = require("./models/User")
 const clinicController = require("./controllers/clinicController")
 const apptController = require("./controllers/apptController")
 
-// MONGOOSE CONNECTION/ERROR/DISCONNECTION
+// MONGOOSE CONNECTION/ERROR/DISCONNECTION ===================================================
 mongoose.connection.on("error", (err) =>
   console.log(err.message + " is Mongod not running?")
 );
@@ -31,13 +30,9 @@ mongoose.connection.once("open", () => {
   console.log("connected to mongoose...");
 });
 
-
-//MIDDLEWARE - COOKIE-SESSION FOR LOGIN-AUTH 
-app.set("trust proxy", 1); // add this line
-const store = new MongoDBSession({
-  uri: MONGODB_URI,
-  collection: 'mySessions'
-})
+//MIDDLEWARE - COOKIE-SESSION FOR LOGIN-AUTH ==================================================
+// add this line
+app.set("trust proxy", 1); 
 app.use(
   session({
     secret: "secret",
@@ -59,7 +54,7 @@ app.use(
     })
     );
     
-//MIDDLEWARE - PARSING
+//MIDDLEWARE - GENERAL ===========================================================================
 app.use(express.json()); //must be above the routes
 app.use(express.urlencoded({extended: false}))
 app.use(morgan("tiny"));
@@ -70,17 +65,17 @@ app.use(morgan("tiny"));
     
 //ROUTES
 //LOGIN-AUTH-REGISTER ROUTES
-// Server Landing Page ==============================================================
+// Server Landing Page ============================================================================
 app.get("/", (req,res) => {
   res.send("Hi 2");
 });
 
-//LogIN Landing Page ==============================================================
+//LogIN Landing Page ==============================================================================
 app.get("/login", (req,res) =>{
   res.send("You have been directed to login");
 });
 
-//LogIN POST ==============================================================
+//LogIN POST ======================================================================================
 app.post("/login", async (req,res) => {
   const { email, password } = req.body
 
@@ -97,10 +92,6 @@ app.post("/login", async (req,res) => {
 
   }
 
-  // req.session.isAuth = true
-
-  // res.redirect("/");
-
   const sessUser = { id: user.id, name: user.username, email: user.email }
   req.session.user = sessUser
   console.log(req.session.user)
@@ -109,13 +100,13 @@ app.post("/login", async (req,res) => {
 
 });
 
-//Register Landing Page ==============================================================
+//Register Landing Page ============================================================================
 app.get("/register", (req,res) => {
   res.send("You have been directed to register");
 
 });
 
-//Register POST ==============================================================
+//Register POST =====================================================================================
 app.post("/register", async (req,res) => {
   console.log("req.body", req.body)
   const { username, email, password } = req.body;
@@ -140,13 +131,13 @@ app.post("/register", async (req,res) => {
 
 });
 
-//Dashboard Landing Page ==============================================================
+//Dashboard Landing Page =============================================================================
 app.get("/", isAuth, (req,res) => {
   // res.render("dashboard");
   res.send("You have been directed to homepage");
 });
 
-//LogOUT POST ==============================================================
+//LogOUT POST ========================================================================================
 app.post("/logout", (req,res) =>{
   req.session.destroy((err)=> {
     if (err) throw err;

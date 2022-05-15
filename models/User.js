@@ -17,12 +17,6 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  appointments: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'appt'
-    },
-  ]
 });
 
 const User = mongoose.model('user', userSchema);

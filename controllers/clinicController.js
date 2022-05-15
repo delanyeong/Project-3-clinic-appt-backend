@@ -38,6 +38,8 @@ router.get("/seed", async (req, res) => {
 
 
 // *Index Route
+//@route GET appt/ 
+//@desc Get all clinics ===================================================================
 router.get('/', (req, res) => {
     Clinic.find()
       .then(clinic => {
@@ -49,6 +51,8 @@ router.get('/', (req, res) => {
   })
 
 //* Show Route
+//@route GET appt/:clinic_id
+//@desc Get one clinic ===================================================================
 router.get("/:clinic_id", (req, res) => {
   Clinic.findById(req.params.clinic_id, (err, clinic) => {
     res.json(clinic);
